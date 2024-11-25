@@ -17,7 +17,7 @@ def create_connection():
 
 conn = create_connection()
 
-# Obliczanie ceny
+# Price:
 
 
 def calculate_factor(self):
@@ -45,6 +45,8 @@ def age_factor(self):
         return 0.9
 
 base = base * age_factor()
+# Code -> promo code
+# TODO: create database for promocode (code and discount)
 code = False
 def code_factor(self):
     if self.house.code == False:
