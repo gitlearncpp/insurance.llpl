@@ -1,6 +1,6 @@
 class House:
     def __init__(self, price, bedrooms, bathrooms, square_feet, lot_size,
-                 year_built, city, state, address, number, things_inside):
+                 year_built, city, state, address, number, things_inside, house_type="house"):
         self.price = price
         self.bedrooms = bedrooms
         self.bathrooms = bathrooms
@@ -12,9 +12,10 @@ class House:
         self.city = city
         self.state = state
         self.things_inside = things_inside
+        self.house_type = house_type
 
     def complete_adress(self):
-        return f"{self.state}, {self.address}, {self.number}, {self.city}"
+        return f"{self.house_type},{self.state}, {self.address}, {self.number}, {self.city}"
 
     def insurance_sum(self):
         return f"{self.price}, {self.things_inside}"

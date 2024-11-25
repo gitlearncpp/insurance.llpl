@@ -1,0 +1,132 @@
+body {
+  margin: 0;
+  font-family: 'Fira Code', monospace; /* Ustawienie czcionki Fira Code dla całego body */
+  background-color: #f7f7f7; /* Tło strony */
+  display: flex;
+}
+.sidebar {
+  width: 200px;
+  background-color: #002233; /* Kolor zbliżony do ciemnego tła na ibob.bg */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  position: fixed;
+  height: 100vh; /* Pełna wysokość ekranu */
+}
+.sidebar .top-section {
+  /* Górna część może zawierać treści, które powinny być na górze */
+}
+.sidebar .bottom-section {
+  margin-bottom: 20px; /* Trochę miejsca na dole (ok. 1 cm) */
+}
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  margin: 10px 0;
+}
+.content {
+  margin-left: 220px;
+  padding: 20px;
+  color: #333; /* Ciemny kolor tekstu */
+  flex: 1;
+}
+
+/* Responsywność */
+@media (max-width: 800px) {
+  .sidebar {
+    width: 100%; /* Sidebar zajmuje pełną szerokość ekranu */
+    height: auto; /* Automatyczna wysokość */
+    position: relative;
+  }
+  .content {
+    margin-left: 0; /* Brak marginesu z lewej strony */
+    padding-top: 20px; /* Dodanie odstępu na górze */
+  }
+  body {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 600px) {
+  .sidebar {
+    padding: 10px; /* Zmniejszenie paddingu na urządzeniach mobilnych */
+  }
+}
+
+.footer {
+  color: #333; /* Ciemny kolor tekstu stopki */
+  text-align: center;
+  padding: 10px; /* Odstęp wewnętrzny stopki */
+  font-size: 12px; /* Mniejsza czcionka */
+  width: 100%; /* Pełna szerokość stopki */
+
+}
+
+/* css/style.css */
+.responsive-img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Add this CSS to your existing styles */
+.cookie-popup {
+  display: none; /* Hidden by default */
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: #333;
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.cookie-popup button {
+  background-color: #bbb;
+  border: none;
+  padding: 10px;
+  color: black;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.cookie-popup button:hover {
+  background-color: #999;
+}
+
+.code-container {
+  position: relative;
+  max-width: 600px;
+  margin: auto;
+}
+pre {
+  background-color: #000000; /* Czarne tło */
+  color: #00ff00; /* Zielona czcionka */
+  border: 1px solid #555; /* Obwódka w odcieniu szarości */
+  border-radius: 5px;
+  padding: 15px;
+  font-family: "Courier New", Courier, monospace; /* Czcionka komputerowa */
+  font-size: 14px;
+  line-height: 1.5;
+  max-height: 300px; /* Ograniczenie wysokości */
+  overflow-y: auto; /* Przewijanie pionowe */
+  overflow-x: auto; /* Przewijanie poziome */
+}
+.copy-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.copy-button:hover {
+  background-color: #0056b3;
+}
+
