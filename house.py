@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class House:
     def __init__(self, price, bedrooms, bathrooms, square_feet, lot_size,
                  year_built, city, state, address, number, things_inside, house_type="house"):
@@ -19,4 +21,7 @@ class House:
 
     def insurance_sum(self):
         return f"{self.price}, {self.things_inside}"
+
+    def age(self):
+        return datetime.now().year - self.year_built
 
