@@ -1,10 +1,10 @@
 
 # Factors for price basic variant
-class PropertyInsuranceCalculator:
+class PropertyInsuranceCalculator2:
     def __init__(self, house):
         self.house = house
 
-    def calculate_factor(self):
+    def calculate_factor2(self):
         if self.house.price <= 200000:
             return 0.95
         elif self.house.price <= 400000:
@@ -14,7 +14,7 @@ class PropertyInsuranceCalculator:
         else:
             return 1.4
 
-    def age_factor(self):
+    def age_factor2(self):
         age = self.house.age()  # Wywołanie metody age
         if age <= 10:
             return 1.1
@@ -27,7 +27,7 @@ class PropertyInsuranceCalculator:
         else:
             return 1.0  # Domyślny współczynnik
 
-    def house_factor(self):
+    def house_factor2(self):
         if self.house.house_type == "house":
             return 1.1
         elif self.house.house_type in ["apartment", "flat"]:
@@ -37,7 +37,7 @@ class PropertyInsuranceCalculator:
         else:
             return 1.0
 
-    def size_factor(self):
+    def size_factor2(self):
         if self.house.square_feet <= 70:
             return 1.0
         elif self.house.square_feet <= 90:
@@ -51,11 +51,11 @@ class PropertyInsuranceCalculator:
 
 
 # Price after foctors result
-    def base(self):
+    def base2(self):
         return round(
             500
-            * self.house_factor()
-            * self.age_factor()
-            * self.calculate_factor()
-            * self.size_factor()
+            * self.house_factor2()
+            * self.age_factor2()
+            * self.calculate_factor2()
+            * self.size_factor2()
         )

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Ubezpieczeń</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .response {
+            background: #e9ffe9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #ffe9e9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kalkulator Ubezpieczeń</h1>
+    <form id="insuranceForm">
+        <h2>Wprowadź dane domu:</h2>
+        <label for="price">Cena domu (PLN):</label>
+        <input type="number" id="price" name="price" required>
+
+        <label for="year_built">Rok budowy:</label>
+        <input type="number" id="year_built" name="year_built" required>
+
+        <label for="house_type">Typ domu:</label>
+        <input type="text" id="house_type" name="house_type" placeholder="house, apartment, flat..." required>
+
+        <label for="things_inside">Wartość wyposażenia (PLN):</label>
+        <input type="number" id="things_inside" name="things_inside" required>
+
+        <h2>Wprowadź dane osoby:</h2>
+        <label for="first_name">Imię:</label>
+        <input type="text" id="first_name" name="first_name" required>
+
+        <label for="last_name">Nazwisko:</label>
+        <input type="text" id="last_name" name="last_name" required>
+
+        <label for="pesel">PESEL:</label>
+        <input type="text" id="pesel" name="pesel" required>
+
+        <button type="submit">Oblicz cenę ubezpieczenia</button>
+    </form>
+
+    <div id="responseContainer"></div>
+
+    <script>
+        const form = document.getElementById('insuranceForm');
+        const responseContainer = document.getElementById('responseContainer');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Zapobiega odświeżeniu strony
+
+            const formData = new FormData(form);
+
+            const data = {
+                house: {
+                    price: parseInt(formData.get('price')),
+                    year_built: parseInt(formData.get('year_built')),
+                    house_type: formData.get('house_type'),
+                    things_inside: parseInt(formData.get('things_inside')),
+                },
+                person: {
+                    first_name: formData.get('first_name'),
+                    last_name: formData.get('last_name'),
+                    pesel: formData.get('pesel'),
+                }
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/calculate_price', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Basic ' + btoa('admin:securepassword')  // Kodowanie w base64: admin:securepassword
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                responseContainer.innerHTML = '';
+                if (response.ok) {
+                    responseContainer.innerHTML = `
+                        <div class="response">
+                            <strong>Cena ubezpieczenia:</strong> ${result.price}<br>
+                            <strong>Adres domu:</strong> ${result.house_details}<br>
+                            <strong>Imię i nazwisko:</strong> ${result.person_name}
+                        </div>
+                    `;
+                } else {
+                    responseContainer.innerHTML = `
+                        <div class="error">
+                            <strong>Błąd:</strong> ${result.error}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                responseContainer.innerHTML = `
+                    <div class="error">
+                        <strong>Błąd:</strong> Nie udało się połączyć z serwerem. ${error.message}
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from house import House
 from person import Person
 from sell import PropertyInsuranceCalculator
+from sell2 import PropertyInsuranceCalculator2
 from db import create_connection
 from psycopg2.extras import RealDictCursor
 from functools import wraps
@@ -67,7 +68,7 @@ def create_client(data):
         if field in data and isinstance(data[field], str):
             data[field] = data[field].lower()
 
-
+# DB connection and send data
     conn = create_connection()
     cursor = conn.cursor()
     cursor.execute("""
@@ -81,6 +82,7 @@ def create_client(data):
     conn.close()
     return client_id
 
+# SaveCalc into DB
 def save_calculation(client_id, house, result):
     conn = create_connection()
     cursor = conn.cursor()
@@ -92,6 +94,7 @@ def save_calculation(client_id, house, result):
     conn.commit()
     conn.close()
 
+# Main thing - price calc and response
 @app.route("/calculate_price", methods=["POST"])
 @requires_auth
 def calculate_price():
@@ -121,7 +124,7 @@ def calculate_price():
             house_type=house_data.get("house_type", "house")
         )
 
-        # Object Person
+        # Object Person create
         person = Person(
             first_name=person_data["first_name"],
             last_name=person_data["last_name"],
@@ -146,7 +149,9 @@ def calculate_price():
 
         # Price calculation
         calculator = PropertyInsuranceCalculator(house)
-        price = calculator.base()
+        # calculator2 = PropertyInsuranceCalculator2(house)
+        price = calculator.base()   #Place for price
+        # price2 = calculator2.base2()
 
         # Save calculation in db
         save_calculation(client_id, house, price)
@@ -154,13 +159,23 @@ def calculate_price():
 
         return jsonify({
             "price": price,
+            # "price2": price2,
             "house_details": house.complete_adress().title(),
             "person_name": person.full_name().title()
         }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+# Widok dla strony głównej (frontend)
+@app.route("/", methods=["GET"])
+def home():
+    return render_template("index.html")
 
+# Twoje endpointy API, np.:
+# @app.route("/calculate_price", methods=["POST"])
+# def calculate_price():
+#     # Twoja istniejąca logika
+#     pass
 
 if __name__ == "__main__":
     app.run(debug=True)
