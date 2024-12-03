@@ -10,7 +10,7 @@ class House:
         self.lot_size = lot_size
         self.year_built = year_built
         self.address = address
-        self.number = number
+        self.number = int(number)
         self.city = city
         self.state = state
         self.things_inside = things_inside

@@ -61,17 +61,41 @@
     <h1>Kalkulator Ubezpieczeń</h1>
     <form id="insuranceForm">
         <h2>Wprowadź dane domu:</h2>
-        <label for="price">Cena domu (PLN):</label>
+        <label for="price">Price:</label>
         <input type="number" id="price" name="price" required>
 
-        <label for="year_built">Rok budowy:</label>
+        <label for="year_built">Year: built</label>
         <input type="number" id="year_built" name="year_built" required>
 
-        <label for="house_type">Typ domu:</label>
+        <label for="house_type">House type:</label>
         <input type="text" id="house_type" name="house_type" placeholder="house, apartment, flat..." required>
 
-        <label for="things_inside">Wartość wyposażenia (PLN):</label>
+        <label for="things_inside">Things inside:</label>
         <input type="number" id="things_inside" name="things_inside" required>
+
+        <label for="square_feet">Square feet:</label>
+        <input type="number" id="square_feet" name="square_feet" required>
+
+        <label for="lot_size">Lot size:</label>
+        <input type="number" id="lot_size" name="lot_size" required>
+
+        <label for="bedrooms">bedrooms:</label>
+        <input type="number" id="bedrooms" name="bedrooms" required>
+
+        <label for="bathrooms">bathrooms:</label>
+        <input type="number" id="bathrooms" name="bathrooms" required>
+
+        <label for="address">Adress:</label>
+        <input type="text" id="address" name="address" required>
+
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" required>
+
+        <label for="state">State:</label>
+        <input type="text" id="state" name="state" required>
+
+        <label for="number_h">Numer domu/mieszkania (House):</label>
+        <input type="number" id="number_h" name="number_h" required>
 
         <h2>Wprowadź dane osoby:</h2>
         <label for="first_name">Imię:</label>
@@ -81,7 +105,25 @@
         <input type="text" id="last_name" name="last_name" required>
 
         <label for="pesel">PESEL:</label>
-        <input type="text" id="pesel" name="pesel" required>
+        <input type="number" id="pesel" name="pesel" required>
+
+        <label for="street">Sreeet</label>
+        <input type="text" id="street" name="street" required>
+
+        <label for="city_p">Sreeet</label>
+        <input type="text" id="city_p" name="city_p" required>
+
+        <label for="number">Numer mieszkania/dom:</label>
+        <input type="number" id="number" name="number" required>
+
+        <label for="postal_code">Kod pocztowy:</label>
+        <input type="number" id="postal_code" name="postal_code" required>
+
+        <label for="phone">Numer telefonu:</label>
+        <input type="number" id="phone" name="phone" required>
+
+        <label for="vip">VIP:</label>
+        <input type="checkbox" id="vip" name="vip">
 
         <button type="submit">Oblicz cenę ubezpieczenia</button>
     </form>
@@ -89,64 +131,81 @@
     <div id="responseContainer"></div>
 
     <script>
-        const form = document.getElementById('insuranceForm');
-        const responseContainer = document.getElementById('responseContainer');
+    const form = document.getElementById('insuranceForm');
+    const responseContainer = document.getElementById('responseContainer');
 
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Zapobiega odświeżeniu strony
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Zapobiega odświeżeniu strony
 
-            const formData = new FormData(form);
+        const formData = new FormData(form);
 
-            const data = {
-                house: {
-                    price: parseInt(formData.get('price')),
-                    year_built: parseInt(formData.get('year_built')),
-                    house_type: formData.get('house_type'),
-                    things_inside: parseInt(formData.get('things_inside')),
+        const data = {
+    house: {
+        price: (formData.get('price')) || 0,
+        year_built: (formData.get('year_built')) || 0,
+        house_type: formData.get('house_type') || '',
+        things_inside: (formData.get('things_inside')) || 0,
+        square_feet: (formData.get('square_feet')) || 0,
+        lot_size: (formData.get('lot_size')) || 0,
+        bedrooms: (formData.get('bedrooms')) || 0,
+        bathrooms: (formData.get('bathrooms')) || 0,
+        address: formData.get('address') || '',
+        city: formData.get('city') || '',
+        state: formData.get('state') || '',
+        number: formData.get('number_h') || ''  // 'number_h' dla danych domu
+    },
+    person: {
+        first_name: formData.get('first_name') || '',
+        last_name: formData.get('last_name') || '',
+        pesel: formData.get('pesel') || '',
+        number: formData.get('number') || '', // 'number' dla danych osoby
+        postal_code: formData.get('postal_code') || '',
+        city: formData.get('city_h') || '',
+        street: formData.get('street') || '',
+        phone: formData.get('phone') || '',
+        vip: formData.get('vip') === 'on'
+    }
+};
+
+
+
+        try {
+            const response = await fetch('http://127.0.0.1:5000/calculate_price', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Basic ' + btoa('admin:securepassword')  // Kodowanie w base64: admin:securepassword
                 },
-                person: {
-                    first_name: formData.get('first_name'),
-                    last_name: formData.get('last_name'),
-                    pesel: formData.get('pesel'),
-                }
-            };
+                body: JSON.stringify(data)
+            });
 
-            try {
-                const response = await fetch('http://127.0.0.1:5000/calculate_price', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Basic ' + btoa('admin:securepassword')  // Kodowanie w base64: admin:securepassword
-                    },
-                    body: JSON.stringify(data)
-                });
+            const result = await response.json();
 
-                const result = await response.json();
-
-                responseContainer.innerHTML = '';
-                if (response.ok) {
-                    responseContainer.innerHTML = `
-                        <div class="response">
-                            <strong>Cena ubezpieczenia:</strong> ${result.price}<br>
-                            <strong>Adres domu:</strong> ${result.house_details}<br>
-                            <strong>Imię i nazwisko:</strong> ${result.person_name}
-                        </div>
-                    `;
-                } else {
-                    responseContainer.innerHTML = `
-                        <div class="error">
-                            <strong>Błąd:</strong> ${result.error}
-                        </div>
-                    `;
-                }
-            } catch (error) {
+            responseContainer.innerHTML = '';
+            if (response.ok) {
+                responseContainer.innerHTML = `
+                    <div class="response">
+                        <strong>Cena ubezpieczenia:</strong> ${result.price}<br>
+                        <strong>Adres domu:</strong> ${result.house_details}<br>
+                        <strong>Imię i nazwisko:</strong> ${result.person_name}
+                    </div>
+                `;
+            } else {
                 responseContainer.innerHTML = `
                     <div class="error">
-                        <strong>Błąd:</strong> Nie udało się połączyć z serwerem. ${error.message}
+                        <strong>Błąd:</strong> ${result.error}
                     </div>
                 `;
             }
-        });
-    </script>
+        } catch (error) {
+            responseContainer.innerHTML = `
+                <div class="error">
+                    <strong>Błąd:</strong> Nie udało się połączyć z serwerem. ${error.message}
+                </div>
+            `;
+        }
+    });
+</script>
+
 </body>
 </html>

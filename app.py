@@ -1,15 +1,19 @@
 from flask import Flask, request, jsonify, render_template
 from house import House
 from person import Person
+from checkPesel import CheckPesel
 from sell import PropertyInsuranceCalculator
 from sell2 import PropertyInsuranceCalculator2
 from db import create_connection
 from psycopg2.extras import RealDictCursor
 from functools import wraps
 import base64
+from flask_cors import CORS
+
+
 
 app = Flask(__name__)
-
+CORS(app)
 # Easy function for authentication
 
 def check_auth(username, password):
@@ -100,8 +104,9 @@ def save_calculation(client_id, house, result):
 def calculate_price():
     try:
         data = request.json
+        app.logger.debug(f"Received data: {data}")
 
-        # import data about house and person
+        # Sprawdzanie danych wejściowych
         house_data = data.get("house")
         person_data = data.get("person")
 
@@ -109,29 +114,31 @@ def calculate_price():
             raise ValueError("Dane domu i osoby są wymagane.")
 
         # House object create
+        app.logger.debug(f"Creating House object with data: {house_data}")
         house = House(
-            price=house_data["price"],
-            bedrooms=house_data["bedrooms"],
-            bathrooms=house_data["bathrooms"],
-            square_feet=house_data["square_feet"],
-            lot_size=house_data["lot_size"],
-            year_built=house_data["year_built"],
+            price=int(house_data["price"]),
+            bedrooms=int(house_data["bedrooms"]),
+            bathrooms=int(house_data["bathrooms"]),
+            square_feet=int(house_data["square_feet"]),
+            lot_size=int(house_data["lot_size"]),
+            year_built=int(house_data["year_built"]),
             city=house_data["city"],
             state=house_data["state"],
             address=house_data["address"],
-            number=house_data["number"],
+            number=int(house_data["number"]),
             things_inside=house_data["things_inside"],
             house_type=house_data.get("house_type", "house")
         )
 
         # Object Person create
+        app.logger.debug(f"Creating Person object with data: {person_data}")
         person = Person(
             first_name=person_data["first_name"],
             last_name=person_data["last_name"],
-            pesel=person_data["pesel"],
+            pesel=int(person_data["pesel"]),
             street=person_data.get("street"),
             city=person_data.get("city"),
-            number=person_data.get("number"),
+            number=int(person_data.get("number")),
             postal_code=person_data.get("postal_code"),
             phone=person_data.get("phone"),
             vip=person_data.get("vip", False)
@@ -139,43 +146,42 @@ def calculate_price():
 
         # Verification did client exist in db
         client = get_client_by_pesel(person.pesel)
+        app.logger.debug(f"Client found in DB: {client}")
+
         if client:
-            # if not, update
             update_client_data(client["id"], person_data)
             client_id = client["id"]
         else:
-            # New client
             client_id = create_client(person_data)
 
         # Price calculation
+        app.logger.debug(f"Calculating price for house: {house}")
         calculator = PropertyInsuranceCalculator(house)
-        # calculator2 = PropertyInsuranceCalculator2(house)
+        calculator2 = PropertyInsuranceCalculator2(house)
         price = calculator.base()   #Place for price
-        # price2 = calculator2.base2()
+        price2 = calculator2.base2()
+
+        # Check age based on PESEL
+        check_pesel_instance = CheckPesel(person)
+        check_pesel = check_pesel_instance.check_age()
 
         # Save calculation in db
         save_calculation(client_id, house, price)
 
-
         return jsonify({
             "price": price,
-            # "price2": price2,
+            "price_2": price2,
             "house_details": house.complete_adress().title(),
-            "person_name": person.full_name().title()
+            "house_insurance_sum": house.insurance_sum(),
+            "person_name": person.full_name().title(),
+            "check_pesel": check_pesel
         }), 200
 
     except Exception as e:
+        app.logger.error(f"Error occurred during price calculation: {str(e)}")
         return jsonify({"error": str(e)}), 400
-# Widok dla strony głównej (frontend)
-@app.route("/", methods=["GET"])
-def home():
-    return render_template("index.html")
 
-# Twoje endpointy API, np.:
-# @app.route("/calculate_price", methods=["POST"])
-# def calculate_price():
-#     # Twoja istniejąca logika
-#     pass
 
 if __name__ == "__main__":
     app.run(debug=True)
+

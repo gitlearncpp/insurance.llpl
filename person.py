@@ -22,6 +22,9 @@ class Person:
     def vip(self):
         return "VIP" if self.vip else "Zostań klientem VIP!"
 
+    def pesel(self):
+        return self.pesel
+
     def __repr__(self):
         return f"<Person {self.full_name()}>"
 

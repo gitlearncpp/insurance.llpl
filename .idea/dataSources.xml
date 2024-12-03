@@ -8,5 +8,13 @@
       <jdbc-url>jdbc:postgresql://localhost:5432/insurance_db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="insurance_db@57.129.16.48" uuid="318aa52d-694b-46d8-ac46-e2d79e809a84">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <remarks>prd!!!</remarks>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://57.129.16.48:5432/insurance_db</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

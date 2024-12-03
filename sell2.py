@@ -1,5 +1,5 @@
 
-# Factors for price basic variant
+# Factors for price more expensivve variant
 class PropertyInsuranceCalculator2:
     def __init__(self, house):
         self.house = house
@@ -29,13 +29,13 @@ class PropertyInsuranceCalculator2:
 
     def house_factor2(self):
         if self.house.house_type == "house":
-            return 1.1
+            return 1.3
         elif self.house.house_type in ["apartment", "flat"]:
-            return 1.0
-        elif self.house.house_type == "townhouse":
             return 1.2
+        elif self.house.house_type == "townhouse":
+            return 1.3
         else:
-            return 1.0
+            return 1.1
 
     def size_factor2(self):
         if self.house.square_feet <= 70:
@@ -53,7 +53,7 @@ class PropertyInsuranceCalculator2:
 # Price after foctors result
     def base2(self):
         return round(
-            500
+            650
             * self.house_factor2()
             * self.age_factor2()
             * self.calculate_factor2()
